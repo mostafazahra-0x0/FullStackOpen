@@ -2,19 +2,23 @@ import { useState } from 'react'
 import Person from './components/persons'
 import './App.css'
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Mostafa Zahra' }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState ('')
   const handleNameChange = (event) => {
     console.log(event.target.value)
-    setNewName(event.target.value)
+    setNewName(event.target.value )
+  }
+  const handleNumbreChange = (event) => {
+    console.log(event.target.value)
+    setNewNumber(event.target.value )
   }
   const addPerson = (event) => {
     event.preventDefault()
     console.log('button clicked', event.target)
     const personObject = {
       name: newName,
+      number: newNumber
     }
     persons.find(p => p.name === newName)
     persons.find(p => p.name === newName)
@@ -25,6 +29,7 @@ const App = () => {
       setPersons(persons.concat(personObject)) && setNewName('')
     )
     setNewName('')
+    setNewNumber('')
   }
   return (
     <div className='phone'>
@@ -32,6 +37,7 @@ const App = () => {
       <form onSubmit={addPerson} >
         <div>
           name: <input value={newName} onChange={handleNameChange} />
+          number: <input value={newNumber} onChange={handleNumbreChange} />
         </div>
         <div>
           <button type="submit">add</button>
