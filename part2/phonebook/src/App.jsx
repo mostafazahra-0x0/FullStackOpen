@@ -1,14 +1,24 @@
-import { useState } from 'react'
 import Persons from './components/Persons'
 import './App.css'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
-
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState ('')
   const [filter, setFilter] = useState('')
+  const getHook = () => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }
+  useEffect(getHook, [])
   const handleNameChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value )
