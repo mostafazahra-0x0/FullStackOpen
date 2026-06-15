@@ -3,50 +3,55 @@ import './App.css'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState ('')
+  const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
-  const getHook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+
+  useEffect(() => {
+    personService.getAll()
       .then(response => {
-        console.log('promise fulfilled')
         setPersons(response.data)
       })
-  }
-  useEffect(getHook, [])
+  }, [])
+
   const handleNameChange = (event) => {
-    console.log(event.target.value)
-    setNewName(event.target.value )
+    setNewName(event.target.value)
   }
+
   const handleNumberChange = (event) => {
-    console.log(event.target.value)
-    setNewNumber(event.target.value )
+    setNewNumber(event.target.value)
   }
+
   const addPerson = (event) => {
     event.preventDefault()
-    console.log('button clicked', event.target)
-    const personObject = {
-      name: newName,
-      number: newNumber
-    }
+    const personObject = { name: newName, number: newNumber }
     persons.find(p => p.name === newName)
-    ? (
-      alert(`${newName} is already added to phonebook`)
-    )
-    : (
-      setPersons(persons.concat(personObject))
-        )
+      ? alert(`${newName} is already added to phonebook`)
+      : personService.create(personObject)
+          .then(response => {
+            setPersons(persons.concat(response.data))
+          })
     setNewName('')
     setNewNumber('')
   }
+
+  const deletePerson = (id) => {
+    if (window.confirm(`Delete ?`)) {
+      personService.remove(id)
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== id))
+        })
+    }
+  }
+
   const personsToShow = persons.filter(p => 
     p.name.toLowerCase().includes(filter.toLowerCase())
   )
+
   return (
     <div className="phone">
       <h2>Phonebook</h2>
@@ -59,8 +64,9 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} onDelete={deletePerson} />
     </div>
-  );
+  )
 }
+
 export default App
