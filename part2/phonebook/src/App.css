@@ -5,3 +5,18 @@
   align-items: center;
   justify-content: center;
 }
+.success {
+  color: green;
+  background: lightgreen;
+  border: 2px solid green;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: red;
+  background: #ffdddd;
+  border: 2px solid red;
+  padding: 10px;
+  margin-bottom: 10px;
+}

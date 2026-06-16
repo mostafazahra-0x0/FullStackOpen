@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import './App.css'
 import noteService from './services/notes'
 import Note from './components/Note'
@@ -12,12 +11,10 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState('some error happened...')
     const getHook = () => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/notes')
-      .then(response => {
-        console.log('promise fulfilled')
-        setNotes(response.data)
-      })
+    noteService.getAll()
+    .then(response => {
+      setNotes(response.data)
+    })
     }
     useEffect(getHook, [])
     console.log('render', notes.length, 'notes')
@@ -36,12 +33,11 @@ const App = () => {
         content: newNote,
         important: Math.random() < 0.5,
       }
-      axios
-        .post('http://localhost:3001/notes', noteObject)
-        .then(response => {
-          setNotes(notes.concat(response.data))
-          setNewNote('')
-        })
+      noteService.create(noteObject)
+      .then(response => {
+        setNotes(notes.concat(response.data))
+        setNewNote('')
+      })
   }
   const toggleImportanceOf = id => {
     const note = notes.find(n => n.id === id)
