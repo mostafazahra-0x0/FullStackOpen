@@ -4,6 +4,7 @@ import { useEffect } from "react"
 const App = () => {
   const [search, setSearch] = useState('')
   const [countries, setCountries] = useState([])
+  const [current, setCurrent] = useState(null)
   const getCountries = () => {
     axios
       .get('https://studies.cs.helsinki.fi/restcountries/api/all')
@@ -13,11 +14,11 @@ const App = () => {
   useEffect(getCountries, [])
   const handleSearchUpdate = (event) => {
   setSearch(event.target.value)
+  setCurrent(null)
   }
   const countriesToShow = countries.filter(c => 
     c.name.common.toLowerCase().includes(search.toLowerCase())
   )
-  const Country = countriesToShow[0]
   return (
     <div>
       <input name="search" onChange={handleSearchUpdate} value={search}></input>
@@ -26,21 +27,27 @@ const App = () => {
       )}
       {countriesToShow.length <= 10 && countriesToShow.length > 1 && (
         countriesToShow.map(c =>
-          <p key={c.cca3}>{c.name.common}</p>
+          <div key={c.cca3}>
+          <p>{c.name.common}</p>
+          <button onClick={() => {
+              setCurrent(c)
+              setSearch(c.name.common)
+              }}>learn more</button>
+          </div>
         )
-      )} 
-      {countriesToShow.length === 1 && (
+      )}
+      {current && (
         <div>
-          <h1>{countriesToShow[0].name.common}</h1>
-          <p>capital {countriesToShow[0].capital?.[0]}</p>
-          <p>area {countriesToShow[0].area}</p>
+          <h1>{current.name.common}</h1>
+          <p>capital {current.capital?.[0]}</p>
+          <p>area {current.area}</p>
           <h3>languages:</h3>
           <ul>
-            {Object.values(countriesToShow[0].languages).map(language => (
+            {Object.values(current.languages).map(language => (
             <li key={language}>{language}</li>
             ))}
           </ul>
-          <img src={countriesToShow[0].flags.png} alt="flag" width="150" />
+          <img src={current.flags.png} alt="flag" width="150" />
         </div>
       )}
 </div>
