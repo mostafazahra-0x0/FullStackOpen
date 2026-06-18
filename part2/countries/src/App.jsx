@@ -2,21 +2,39 @@ import { useState } from "react"
 import axios from 'axios'
 import { useEffect } from "react"
 const App = () => {
+  const api_key = import.meta.env.VITE_WEATHER_KEY
   const [search, setSearch] = useState('')
   const [countries, setCountries] = useState([])
   const [current, setCurrent] = useState(null)
+  const [weather, setWeather] = useState(null)
   const getCountries = () => {
     axios
       .get('https://studies.cs.helsinki.fi/restcountries/api/all')
       .then(response => {
-        setCountries(response.data)})
+        setCountries(response.data)
+      })
   }
   useEffect(getCountries, [])
   const handleSearchUpdate = (event) => {
   setSearch(event.target.value)
   setCurrent(null)
   }
-  const countriesToShow = countries.filter(c => 
+  const getWeather = (capital) => {
+  axios
+    .get(`https://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${api_key}&units=metric`)
+    .then(response => {
+      setWeather(response.data)
+    })
+}
+  useEffect(() => {
+  if (current) {
+    getWeather(current.capital[0])
+  }
+  else if (countriesToShow.length === 1) {
+    getWeather(countriesToShow[0].capital[0])
+  }
+}, [current, search])
+  const countriesToShow = countries.filter(c =>
     c.name.common.toLowerCase().includes(search.toLowerCase())
   )
   return (
@@ -50,7 +68,15 @@ const App = () => {
           <img src={current.flags.png} alt="flag" width="150" />
         </div>
       )}
-</div>
+      {weather && (
+        <div>
+           <h3>Weather in {current?.capital?.[0]}</h3>
+           <p>temperature {weather.main.temp} Celsius</p>
+           <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="weather icon" />
+           <p>wind {weather.wind.speed} m/s</p>
+       </div>
+      )}
+    </div>
   )
 }
 export default App
