@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 app.use(express.json())
+const mongoose = require('mongoose')
 morgan.token('body', (request, response) => {
   return JSON.stringify(request.body)
 })
@@ -9,6 +11,12 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 const cors = require('cors')
 app.use(cors())
 app.use(express.static('dist'))
+mongoose.connect(process.env.MONGODB_URI, { family: 4 })
+const personSchema = new mongoose.Schema({
+  name: String,
+  number: String,
+})
+const Person = mongoose.model('Person', personSchema)
 let persons = [
     {
       "id": "1",
@@ -35,7 +43,9 @@ app.get('/', (request, response) => {
 response.send('<h1>hi</h1>')
 })
 app.get('/api/persons', (request, response) => {
- response.json(persons)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 app.get('/info', (request, response) => {
   response.send(
@@ -57,31 +67,18 @@ app.delete('/api/persons/:id', (request, response) => {
   persons = persons.filter(person => person.id != id)
   response.status(204).end()
 })
-const generateId = () => {
-  const maxId = persons.length > 0
-    ? Math.floor(Math.random() * 1000000)
-    : 0
-  return String(maxId + 1)
-}
 app.post('/api/persons', (request, response) => {
   const body = request.body
   if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'contest missing'
-    })
+    return response.status(400).json({ error: 'content missing' })
   }
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId(),
-  }
-  if (persons.find(p => p.name == body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
-  persons = persons.concat(person)
-  response.json(person)
+  })
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
