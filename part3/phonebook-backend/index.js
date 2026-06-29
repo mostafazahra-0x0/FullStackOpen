@@ -27,9 +27,10 @@ app.get('/api/persons', (request, response, next) => {
   .catch(error => next(error))
 })
 app.get('/info', (request, response, next) => {
-  Person.find({}).then(persons => {
+  Person.countDocuments({})
+    .then(count => {
     response.send(
-    `<h3>we have ${persons.length} people</h3>` +
+    `<h3>we have ${count} people</h3>` +
     `<p>${new Date()}</p>`
     )
   })
@@ -73,9 +74,13 @@ app.put('/api/persons/:id', (request, response, next) => {
     name: body.name,
     number: body.number,
   }
-  Person.findByIdAndUpdate(request.params.id, person, { new: true})
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
     .then(updatedPerson => {
-      response.json(updatedPerson)
+      if (updatedPerson) {
+        response.json(updatedPerson)
+      } else {
+        response.status(404).end() 
+      }
     })
     .catch(error => next(error))
 })
