@@ -13,8 +13,20 @@ app.use(cors())
 app.use(express.static('dist'))
 mongoose.connect(process.env.MONGODB_URI, { family: 4 })
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    validate: {
+      validator: function(v) {
+        return /^\d{2,3}-\d+$/.test(v)
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    }
+  }
 })
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
@@ -95,7 +107,9 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
   next(error)
 }
 app.use(errorHandler)
