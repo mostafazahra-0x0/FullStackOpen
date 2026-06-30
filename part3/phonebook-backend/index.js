@@ -1,10 +1,11 @@
+//link is https://fullstackopen-production-3372.up.railway.app/
 require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 app.use(express.json())
 const mongoose = require('mongoose')
-morgan.token('body', (request, response) => {
+morgan.token('body', (request) => {
   return JSON.stringify(request.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
@@ -36,24 +37,24 @@ personSchema.set('toJSON', {
   }
 })
 const Person = mongoose.model('Person', personSchema)
-app.get('/', (request, response, next) => {
+app.get('/', (request, response) => {
   response.send('<h1>hi</h1>')
 })
 app.get('/api/persons', (request, response, next) => {
   Person.find({}).then(persons => {
     response.json(persons)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 app.get('/info', (request, response, next) => {
   Person.countDocuments({})
     .then(count => {
-    response.send(
-    `<h3>we have ${count} people</h3>` +
+      response.send(
+        `<h3>we have ${count} people</h3>` +
     `<p>${new Date()}</p>`
-    )
-  })
-  .catch(error => next(error))
+      )
+    })
+    .catch(error => next(error))
 })
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
@@ -64,7 +65,7 @@ app.get('/api/persons/:id', (request, response, next) => {
         response.status(404).end()
       }
     })
-    .catch(error => next(error)) 
+    .catch(error => next(error))
 })
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
@@ -72,7 +73,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
       response.status(204).end()
     })
     .catch(error => next(error))
-    })
+})
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
   if (!body.name || !body.number) {
@@ -85,7 +86,7 @@ app.post('/api/persons', (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
@@ -98,7 +99,7 @@ app.put('/api/persons/:id', (request, response, next) => {
       if (updatedPerson) {
         response.json(updatedPerson)
       } else {
-        response.status(404).end() 
+        response.status(404).end()
       }
     })
     .catch(error => next(error))
