@@ -1,16 +1,34 @@
 const dummy = (blogs) => {
   return 1
 }
+
 const totalLikes = (blogs) => {
   return blogs.reduce((sum, blog) => sum + blog.likes, 0)
 }
+
 const favoriteBlog = (blogs) => {
   const reducer = (favorite, blog) => {
-    return blog.likes > favorite.likes
-      ? blog
-      : favorite
+    return blog.likes > favorite.likes ? blog : favorite
   }
-
   return blogs.reduce(reducer, blogs[0])
 }
-module.exports = { dummy, totalLikes, favoriteBlog }
+
+const mostBlogs = (blogs) => {
+  const counts = {}
+  let mostAuthor = null
+  let topCount = 0
+  for (const blog of blogs) {
+    if (counts[blog.author] === undefined) {
+      counts[blog.author] = 1
+    } else {
+      counts[blog.author] = counts[blog.author] + 1
+    }
+    if (counts[blog.author] > topCount) {
+      mostAuthor = blog.author
+      topCount = counts[blog.author]
+    }
+  }
+  return { author: mostAuthor, blogs: topCount }
+}
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs }
