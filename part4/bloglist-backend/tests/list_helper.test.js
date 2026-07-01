@@ -61,3 +61,21 @@ describe('most blogs', () => {
     assert.deepStrictEqual(result, { author: 'John', blogs: 2 })
   })
 })
+describe('most likes', () => {
+  test('of empty list', () => {
+    const result = listHelper.mostLikes([])
+    assert.deepStrictEqual(result, { author: null, likes: 0 })
+  })
+  test('of list with one blog is that blog', () => {
+    const result = listHelper.mostLikes([{ author: 'John', likes: 5 }])
+    assert.deepStrictEqual(result, { author: 'John', likes: 5 })
+  })
+  test('of list with multiple blogs is the one with most likes', () => {
+    const result = listHelper.mostLikes([
+      { author: 'John', likes: 5 },
+      { author: 'Jane', likes: 3 },
+      { author: 'John', likes: 2 },
+    ])
+    assert.deepStrictEqual(result, { author: 'John', likes: 7 })
+  })
+})
