@@ -55,6 +55,15 @@ test('likes defaults to 0 if not provided', async () => {
 
   assert.strictEqual(response.body.likes, 0)
 })
+test('blog without title and url', async () => {
+  const newBlog = {
+    author: 'Test Author',
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
 after(async () => {
   await mongoose.connection.close()
 })
