@@ -42,6 +42,19 @@ test('a blog can be added', async () => {
   const titles = blogAtEnd.map(blog => blog.title)
   assert.ok(titles.includes('Test Blog'))
 })
+test('likes defaults to 0 if not provided', async () => {
+  const newBlog = {
+    title: 'Test Blog Without Likes',
+    author: 'Test Author',
+    url: 'https://testblog.com/',
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+
+  assert.strictEqual(response.body.likes, 0)
+})
 after(async () => {
   await mongoose.connection.close()
 })
