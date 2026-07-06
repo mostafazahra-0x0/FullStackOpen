@@ -9,8 +9,6 @@ const User = require('../models/user')
 const helper = require('./test_helper')
 const api = supertest(app)
 
-let token
-
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
