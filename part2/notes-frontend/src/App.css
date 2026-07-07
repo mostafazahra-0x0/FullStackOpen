@@ -1,0 +1,42 @@
+body {
+  background-color: antiquewhite;
+}
+.notes {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+li {
+  background-color: rgb(126, 56, 15);
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+  color: antiquewhite;
+}
+button {
+  background-color:antiquewhite;
+  border-radius: 10px;
+  margin-left: 25px;
+  padding:5px;
+  font-size: 15px;
+}
+form input {
+  background-color: bisque;
+  border-radius: 20px;
+}
+form button {
+  background-color: bisque;
+  border-radius: 20px;
+  padding: 10px;
+}
+.error {
+  color: red;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
