@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -12,6 +13,7 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
   
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -35,6 +37,10 @@ const App = () => {
     }
     const returnedBlog = await blogService.create(blogObject)
     setBlogs(blogs.concat(returnedBlog))
+    setSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+    setTimeout(() => {
+      setSuccessMessage(null)
+    }, 5000)
     setNewTitle('')
     setNewAuthor('')
     setNewUrl('')
@@ -89,12 +95,15 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={errorMessage} />
         {loginForm()}
       </div>
     )
   }
   return (
     <div>
+      <Notification message={errorMessage} />
+      <Notification message={successMessage} />
       <h2>blogs</h2>
       <p>{user.name} logged in</p>
       <button onClick={handleLogout}>logout</button>
