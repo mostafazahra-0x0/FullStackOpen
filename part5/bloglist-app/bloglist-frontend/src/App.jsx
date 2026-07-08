@@ -12,11 +12,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
-  
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -43,7 +42,7 @@ const App = () => {
       setUsername('')
       setPassword('')
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-    } catch (exception) {
+    } catch {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
@@ -62,6 +61,12 @@ const App = () => {
     }
     const returnedBlog = await blogService.update(blog.id, updatedBlog)
     setBlogs(blogs.map(b => b.id !== blog.id ? b : returnedBlog))
+  }
+  const handleDelete = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      await blogService.remove(blog.id)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+    }
   }
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -88,7 +93,6 @@ const App = () => {
       <button type="submit">login</button>
     </form>
   )
-  
   if (user === null) {
     return (
       <div>
@@ -108,9 +112,8 @@ const App = () => {
       <Togglable buttonLabel='create new blog'>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={handleLike} />
-      )}
+      {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
+        <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />      )}
     </div>
   )
 }
