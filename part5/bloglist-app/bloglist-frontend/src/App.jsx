@@ -13,9 +13,11 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
+    console.log('fetching blogs, current effect run')
+    blogService.getAll().then(blogs => {
+      console.log('received from API:', blogs.length)
+      setBlogs(blogs)
+    })
   }, [])
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -102,6 +104,7 @@ const App = () => {
       </div>
     )
   }
+  console.log('total blogs:', blogs.length)
   return (
     <div>
       <Notification message={errorMessage} />

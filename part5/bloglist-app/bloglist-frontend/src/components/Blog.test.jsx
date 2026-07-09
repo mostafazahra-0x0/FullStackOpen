@@ -27,3 +27,18 @@ test('renders url and likes when expanded', async () => {
   expect(screen.getByText(blog.url, { exact: false })).toBeDefined()
   expect(screen.getByText(blog.likes, { exact: false })).toBeDefined()
 })
+test('like button calls event handler twice when clicked twice', async () => {
+  const mockHandler = vi.fn()
+  const user = userEvent.setup()
+
+  render(<Blog blog={blog} handleLike={mockHandler} />)
+
+  const viewButton = screen.getByText('view')
+  await user.click(viewButton)
+
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(mockHandler).toHaveBeenCalledTimes(2)
+})
