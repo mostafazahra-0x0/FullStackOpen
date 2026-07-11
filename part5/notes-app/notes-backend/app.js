@@ -11,7 +11,10 @@ app.use(express.json())
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 logger.info('connecting to', config.MONGODB_URI)
-
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
 mongoose
   .connect(config.MONGODB_URI, { family: 4 })
   .then(() => {

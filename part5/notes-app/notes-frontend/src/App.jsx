@@ -8,7 +8,6 @@ import Footer from "./components/Footer";
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import NoteForm from './components/NoteForm'
-
 const App = () => {
   const noteFormRef = useRef()
   const [notes, setNotes] = useState([]);
@@ -56,7 +55,7 @@ const App = () => {
     noteService
       .create(noteObject)
       .then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
+        setNotes(prevNotes => prevNotes.concat(returnedNote))
       })
       .catch(error => {
         setErrorMessage('Note content is too short (minimum 5 characters)')
@@ -107,7 +106,7 @@ const App = () => {
 
       {user !== null &&
         <div>
-          <p>{user.username} logged in</p>
+          <p>{user.name} logged in</p>
           <Togglable buttonLabel='new note' ref={noteFormRef}>
             <NoteForm createNote={addNote} />
           </Togglable>
@@ -122,6 +121,7 @@ const App = () => {
           <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)} />
         ))}
       </ul>
+      <Footer />
     </div>
   );
 }
