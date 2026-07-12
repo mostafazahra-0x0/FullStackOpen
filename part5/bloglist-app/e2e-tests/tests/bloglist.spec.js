@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, createBlog } = require('./helper')
 const { before } = require('node:test')
 describe('Blog app', () => {
   beforeEach(async  ({ page }) => {
@@ -23,9 +23,6 @@ describe('Login tests', () => {
         password: 'mostafazahra101'
       }
     })
-    console.log('user status:', userResponse.status())
-    console.log('user body:', await userResponse.text())
-
     await page.goto('http://localhost:5173')
   })
   test('user can login', async ({ page }) => {
@@ -41,5 +38,14 @@ describe('Login tests', () => {
     await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
 
     await expect(page.getByText('Mostafa Zahra logged in')).not.toBeVisible()
+  })
+  describe('when logged in', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'mostafa', 'mostafazahra101')
+    })
+    test('user can create a blog', async ({ page }) => {
+      await createBlog(page, 'hello from after 40 day', 'mostafa zahra', 'https://www.mostafazahra.com')
+      await expect(page.getByText('hello from after 40 day mostafa zahra')).toBeVisible()
+    })
   })
 })
