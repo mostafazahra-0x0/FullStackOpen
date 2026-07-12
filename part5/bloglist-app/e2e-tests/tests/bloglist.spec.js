@@ -47,5 +47,15 @@ describe('Login tests', () => {
       await createBlog(page, 'hello from after 40 day', 'mostafa zahra', 'https://www.mostafazahra.com')
       await expect(page.getByText('hello from after 40 day mostafa zahra')).toBeVisible()
     })
+    test('a blog can be liked', async ({ page }) => {
+      await createBlog(page, 'hello from after 40 day', 'mostafa zahra', 'https://www.mostafazahra.com')
+    
+      const blogDiv = page.getByText('hello from after 40 day mostafa zahra')
+      await blogDiv.getByRole('button', { name: 'view' }).click()
+    
+      await expect(page.getByText('likes 0')).toBeVisible()
+      await page.getByRole('button', { name: 'like' }).click()
+      await expect(page.getByText('likes 1')).toBeVisible()
+    })
   })
 })
