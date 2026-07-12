@@ -57,5 +57,15 @@ describe('Login tests', () => {
       await page.getByRole('button', { name: 'like' }).click()
       await expect(page.getByText('likes 1')).toBeVisible()
     })
+    test('user who created blog can delete it', async ({ page }) => {
+      await createBlog(page, 'hello from after 40 day', 'mostafa zahra', 'https://www.mostafazahra.com')
+    
+      await page.getByRole('button', { name: 'view' }).click()
+    
+      page.on('dialog', dialog => dialog.accept())
+      await page.getByRole('button', { name: 'remove' }).click()
+    
+      await expect(page.getByText('hello from after 40 day mostafa zahra')).not.toBeVisible()
+    })
   })
 })

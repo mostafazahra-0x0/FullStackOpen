@@ -16,6 +16,9 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
   }
 
   const showDeleteButton = user && blog.user && user.username === blog.user.username
+  console.log('user:', user)
+  console.log('blog.user:', blog.user)
+  console.log('showDeleteButton:', showDeleteButton)
   return (
     <div style={blogStyle}>
       <div>

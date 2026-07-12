@@ -28,5 +28,6 @@ import { defineConfig, devices } from '@playwright/test';
        use: { ...devices['Desktop Chrome'] }
      }
    ],
+   reporter: [['html', { open: 'never' }]],
  });
 
