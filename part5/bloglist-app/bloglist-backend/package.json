@@ -10,7 +10,8 @@
     "test": "node --test",
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start:test": "cross-env NODE_ENV=test node --watch index.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
