@@ -20,7 +20,7 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
   console.log('blog.user:', blog.user)
   console.log('showDeleteButton:', showDeleteButton)
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <div>
         {blog.title} {blog.author}
         <button onClick={toggleDetails}>

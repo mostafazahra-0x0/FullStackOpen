@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test')
 const loginWith = async (page, username, password)  => {
   await page.getByLabel('username').fill(username)
   await page.getByLabel('password').fill(password)
@@ -9,5 +10,15 @@ const createBlog = async (page, title, author, url) => {
   await page.getByLabel('author').fill(author)
   await page.getByLabel('url').fill(url)
   await page.getByRole('button', { name: 'create' }).click()
+  await page.locator('.blog').filter({ hasText: title }).waitFor()
 }
-module.exports = { loginWith, createBlog }
+
+const likeBlog = async (page, blogTitle, times) => {
+  const blogDiv = page.locator('.blog').filter({ hasText: blogTitle })
+  await blogDiv.getByRole('button', { name: 'view' }).click()
+  for (let i = 0; i < times; i++) {
+    await blogDiv.getByRole('button', { name: 'like' }).click()
+    await expect(blogDiv.getByText(`likes ${i + 1}`)).toBeVisible()
+  }
+}
+module.exports = { loginWith, createBlog, likeBlog }

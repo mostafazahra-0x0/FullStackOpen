@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -12,6 +12,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
+  const blogFormRef = useRef()
   useEffect(() => {
     console.log('fetching blogs, current effect run')
     blogService.getAll().then(blogs => {
@@ -28,8 +29,9 @@ const App = () => {
     }
   }, [])
   const addBlog = async (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     const returnedBlog = await blogService.create(blogObject)
-    setBlogs(blogs.concat(returnedBlog))
+    setBlogs(prevBlogs => prevBlogs.concat(returnedBlog))
     setSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
     setTimeout(() => {
       setSuccessMessage(null)
@@ -62,7 +64,7 @@ const App = () => {
       user: blog.user && blog.user.id ? blog.user.id : blog.user
     }
     const returnedBlog = await blogService.update(blog.id, updatedBlog)
-    setBlogs(blogs.map(b => b.id !== blog.id ? b : returnedBlog))
+    setBlogs(prevBlogs => prevBlogs.map(b => b.id !== blog.id ? b : returnedBlog))
   }
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
@@ -112,7 +114,7 @@ const App = () => {
       <h2>blogs</h2>
       <p>{user.name} logged in</p>
       <button onClick={handleLogout}>logout</button>
-      <Togglable buttonLabel='create new blog'>
+      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>

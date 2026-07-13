@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, createBlog } = require('./helper')
+const { loginWith, createBlog, likeBlog } = require('./helper')
 const { before } = require('node:test')
 describe('Blog app', () => {
   beforeEach(async  ({ page }) => {
@@ -85,6 +85,20 @@ describe('Login tests', () => {
       await page.getByRole('button', { name: 'view' }).click()
     
       await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
+    })
+    test('blogs are ordered by likes, most liked first', async ({ page }) => {
+      await createBlog(page, 'blog one', 'author one', 'http://one.com')
+      await createBlog(page, 'blog two', 'author two', 'http://two.com')
+      await createBlog(page, 'blog three', 'author three', 'http://three.com')
+
+      await likeBlog(page, 'blog one', 1)
+      await likeBlog(page, 'blog two', 3)
+      await likeBlog(page, 'blog three', 2)
+
+      const blogElements = page.locator('.blog')
+      await expect(blogElements.nth(0)).toContainText('blog two')
+      await expect(blogElements.nth(1)).toContainText('blog three')
+      await expect(blogElements.nth(2)).toContainText('blog one')
     })
   })
 })
