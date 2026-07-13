@@ -67,5 +67,24 @@ describe('Login tests', () => {
     
       await expect(page.getByText('hello from after 40 day mostafa zahra')).not.toBeVisible()
     })
+    test('only the creator can see the delete button', async ({ page, request }) => {
+      await createBlog(page, 'hello from after 40 day', 'mostafa zahra', 'https://www.mostafazahra.com')
+    
+      await request.post('http://localhost:3003/api/users', {
+        data: {
+          name: 'Second User',
+          username: 'seconduser',
+          password: 'password123'
+        }
+      })
+    
+      await page.getByRole('button', { name: 'logout' }).click()
+    
+      await loginWith(page, 'seconduser', 'password123')
+    
+      await page.getByRole('button', { name: 'view' }).click()
+    
+      await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
+    })
   })
 })
