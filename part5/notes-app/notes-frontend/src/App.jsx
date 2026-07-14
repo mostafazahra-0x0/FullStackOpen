@@ -1,4 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
+import {
+  Routes,
+  Route,
+  Link,
+  useMatch
+} from 'react-router-dom'
+import Home from './components/Home'
+import NoteList from './components/NoteList'
 import "./App.css";
 import noteService from "./services/notes";
 import loginService from './services/login'
@@ -9,15 +17,12 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import NoteForm from './components/NoteForm'
 const App = () => {
-  const noteFormRef = useRef()
   const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("");
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
   useEffect(() => {
     noteService.getAll().then(initialNotes => {
       setNotes(initialNotes)
@@ -51,7 +56,6 @@ const App = () => {
   }
 
   const addNote = (noteObject) => {
-    noteFormRef.current.toggleVisibility()
     noteService
       .create(noteObject)
       .then(returnedNote => {
@@ -64,7 +68,11 @@ const App = () => {
         }, 5000)
       })
   }
-
+  const deleteNote = (id) => {
+    noteService.remove(id).then(() => {
+      setNotes(notes.filter(n => n.id !== id))
+    })
+  }
   const toggleImportanceOf = (id) => {
     const note = notes.find((n) => n.id === id);
     const changedNote = { ...note, important: !note.important };
@@ -80,16 +88,24 @@ const App = () => {
         }, 5000);
       });
   };
-
-  const handleNoteChange = event => {
-    setNewNote(event.target.value)
+  const notesToShow = showAll ? notes : notes.filter(note => note.important)
+  const padding = {
+    padding: 5
   }
 
-  const notesToShow = showAll ? notes : notes.filter(note => note.important)
+  const match = useMatch('/notes/:id')
+  const note = match
+    ? notes.find(note => note.id === match.params.id)
+    : null
 
   return (
-    <div className="notes">
-      <h1>Notes</h1>
+    <div>
+      <div>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/notes">notes</Link>
+        <Link style={padding} to="/create">new note</Link>
+      </div>
+
       <Notification message={errorMessage} />
 
       {user === null &&
@@ -103,27 +119,31 @@ const App = () => {
           />
         </Togglable>
       }
+      {user !== null && <p>{user.name} logged in</p>}
 
-      {user !== null &&
-        <div>
-          <p>{user.name} logged in</p>
-          <Togglable buttonLabel='new note' ref={noteFormRef}>
-            <NoteForm createNote={addNote} />
-          </Togglable>
-        </div>
-      }
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/notes" element={
+          <NoteList
+            notes={notesToShow}
+            showAll={showAll}
+            setShowAll={setShowAll}
+            toggleImportanceOf={toggleImportanceOf}
+          />
+        } />
+        <Route path="/notes/:id" element={
+          <Note
+            note={note}
+            toggleImportanceOf={toggleImportanceOf}
+            deleteNote={deleteNote}
+          />
+        } />
+        <Route path="/create" element={<NoteForm createNote={addNote} />} />
+      </Routes>
 
-      <div>
-        <button onClick={() => setShowAll(!showAll)}>show {showAll ? "important" : "all"}</button>
-      </div>
-      <ul>
-        {notesToShow.map((note) => (
-          <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)} />
-        ))}
-      </ul>
       <Footer />
     </div>
-  );
+  )
 }
 
 export default App;
