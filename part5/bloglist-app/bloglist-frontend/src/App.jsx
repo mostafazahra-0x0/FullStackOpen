@@ -1,10 +1,17 @@
 import { useState, useEffect, useRef } from 'react'
+import {
+  Routes,
+  Route,
+  Link,
+  useNavigate
+} from 'react-router-dom'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
@@ -13,13 +20,14 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const blogFormRef = useRef()
+  const navigate = useNavigate()
+
   useEffect(() => {
-    console.log('fetching blogs, current effect run')
     blogService.getAll().then(blogs => {
-      console.log('received from API:', blogs.length)
       setBlogs(blogs)
     })
   }, [])
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
@@ -28,6 +36,7 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
     const returnedBlog = await blogService.create(blogObject)
@@ -37,6 +46,7 @@ const App = () => {
       setSuccessMessage(null)
     }, 5000)
   }
+
   const handleLogin = async event => {
     event.preventDefault()
     try {
@@ -46,6 +56,7 @@ const App = () => {
       setUsername('')
       setPassword('')
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      navigate('/')
     } catch {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
@@ -53,10 +64,13 @@ const App = () => {
       }, 5000)
     }
   }
+
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
+    navigate('/')
   }
+
   const handleLike = async (blog) => {
     const updatedBlog = {
       ...blog,
@@ -66,12 +80,14 @@ const App = () => {
     const returnedBlog = await blogService.update(blog.id, updatedBlog)
     setBlogs(prevBlogs => prevBlogs.map(b => b.id !== blog.id ? b : returnedBlog))
   }
+
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       await blogService.remove(blog.id)
       setBlogs(blogs.filter(b => b.id !== blog.id))
     }
   }
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -97,28 +113,44 @@ const App = () => {
       <button type="submit">login</button>
     </form>
   )
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <Notification message={errorMessage} />
-        {loginForm()}
-      </div>
-    )
-  }
-  console.log('total blogs:', blogs.length)
+
   return (
     <div>
+      <div>
+        <Link to="/">blogs</Link>
+        {user === null
+          ? <Link to="/login" style={{ marginLeft: 10 }}>login</Link>
+          : <span style={{ marginLeft: 10 }}>
+              {user.name} logged in
+              <button onClick={handleLogout} style={{ marginLeft: 10 }}>logout</button>
+            </span>
+        }
+      </div>
+
+      <h2>blogs</h2>
+
       <Notification message={errorMessage} />
       <Notification message={successMessage} />
-      <h2>blogs</h2>
-      <p>{user.name} logged in</p>
-      <button onClick={handleLogout}>logout</button>
-      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
-      {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />      )}
+
+      <Routes>
+        <Route path="/login" element={
+          user
+            ? <p>You are already logged in</p>
+            : loginForm()
+        } />
+        <Route path="/" element={
+          <div>
+            {user !== null &&
+              <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+                <BlogForm createBlog={addBlog} />
+              </Togglable>
+            }
+            {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
+              <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
+            )}
+          </div>
+        } />
+      </Routes>
     </div>
   )
 }
