@@ -3,8 +3,10 @@ import {
   Routes,
   Route,
   Link,
-  useNavigate
+  useNavigate,
+  useMatch
 } from 'react-router-dom'
+import BlogList from './components/BlogList'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -113,7 +115,10 @@ const App = () => {
       <button type="submit">login</button>
     </form>
   )
-
+  const match = useMatch('/blogs/:id')
+  const blog = match
+    ? blogs.find(b => b.id === match.params.id)
+    : null
   return (
     <div>
       <div>
@@ -138,6 +143,9 @@ const App = () => {
             ? <p>You are already logged in</p>
             : loginForm()
         } />
+        <Route path="/blogs/:id" element={
+          <Blog blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
+        } />
         <Route path="/" element={
           <div>
             {user !== null &&
@@ -145,9 +153,7 @@ const App = () => {
                 <BlogForm createBlog={addBlog} />
               </Togglable>
             }
-            {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
-              <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
-            )}
+            <BlogList blogs={blogs} />
           </div>
         } />
       </Routes>
