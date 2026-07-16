@@ -5,6 +5,7 @@ import {
   Link,
   useMatch
 } from 'react-router-dom'
+import styled from 'styled-components'
 import Home from './components/Home'
 import NoteList from './components/NoteList'
 import "./App.css";
@@ -16,6 +17,15 @@ import Footer from "./components/Footer";
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import NoteForm from './components/NoteForm'
+const Page = styled.div`
+  padding: 1em;
+  background: papayawhip;
+`
+
+const Navigation = styled.div`
+  background: BurlyWood;
+  padding: 1em;
+`
 const App = () => {
   const [notes, setNotes] = useState([]);
   const [showAll, setShowAll] = useState(true);
@@ -99,12 +109,12 @@ const App = () => {
     : null
 
   return (
-    <div>
-      <div>
+    <Page>
+      <Navigation>
         <Link style={padding} to="/">home</Link>
         <Link style={padding} to="/notes">notes</Link>
         <Link style={padding} to="/create">new note</Link>
-      </div>
+      </Navigation>
 
       <Notification message={errorMessage} />
 
@@ -130,6 +140,7 @@ const App = () => {
             setShowAll={setShowAll}
             toggleImportanceOf={toggleImportanceOf}
           />
+          
         } />
         <Route path="/notes/:id" element={
           <Note
@@ -141,8 +152,10 @@ const App = () => {
         <Route path="/create" element={<NoteForm createNote={addNote} />} />
       </Routes>
 
-      <Footer />
-    </div>
+      <Footer>
+         Note app, Department of Computer Science, University of Helsinki 2026
+      </Footer>
+    </Page>
   )
 }
 
