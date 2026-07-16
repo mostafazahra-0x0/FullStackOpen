@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Routes,
   Route,
@@ -11,7 +11,6 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 
 const App = () => {
@@ -21,7 +20,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
-  const blogFormRef = useRef()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -40,15 +38,14 @@ const App = () => {
   }, [])
 
   const addBlog = async (blogObject) => {
-    blogFormRef.current.toggleVisibility()
     const returnedBlog = await blogService.create(blogObject)
     setBlogs(prevBlogs => prevBlogs.concat(returnedBlog))
     setSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
     setTimeout(() => {
       setSuccessMessage(null)
     }, 5000)
+    navigate('/')
   }
-
   const handleLogin = async event => {
     event.preventDefault()
     try {
@@ -126,12 +123,13 @@ const App = () => {
         {user === null
           ? <Link to="/login" style={{ marginLeft: 10 }}>login</Link>
           : <span style={{ marginLeft: 10 }}>
+              <Link to="/create">create new</Link>
+              {' '}
               {user.name} logged in
               <button onClick={handleLogout} style={{ marginLeft: 10 }}>logout</button>
             </span>
         }
       </div>
-
       <h2>blogs</h2>
 
       <Notification message={errorMessage} />
@@ -147,15 +145,9 @@ const App = () => {
           <Blog blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
         } />
         <Route path="/" element={
-          <div>
-            {user !== null &&
-              <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-                <BlogForm createBlog={addBlog} />
-              </Togglable>
-            }
-            <BlogList blogs={blogs} />
-          </div>
+          <BlogList blogs={blogs} />
         } />
+        <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
       </Routes>
     </div>
   )
