@@ -1,5 +1,21 @@
 import { useState } from 'react'
+import styled from 'styled-components'
 
+const Button = styled.button`
+  background: Bisque;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid Chocolate;
+  border-radius: 10px;
+`
+
+const Input = styled.input`
+  background: Bisque;
+  margin: 0.25em;
+  padding: 5px;
+  border-radius: 5px;
+`
 const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -22,7 +38,7 @@ const BlogForm = ({ createBlog }) => {
       <div>
         <label>
           title:
-          <input
+          <Input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -33,7 +49,7 @@ const BlogForm = ({ createBlog }) => {
       <div>
         <label>
           author:
-          <input
+          <Input
             type="text"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
@@ -44,7 +60,7 @@ const BlogForm = ({ createBlog }) => {
       <div>
         <label>
           url:
-          <input
+          <Input
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
@@ -52,7 +68,7 @@ const BlogForm = ({ createBlog }) => {
           />
         </label>
       </div>
-      <button type="submit">create</button>
+      <Button type="submit">create</Button>
     </form>
   )
 }

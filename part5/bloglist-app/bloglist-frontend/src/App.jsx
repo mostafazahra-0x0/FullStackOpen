@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import {
   Routes,
   Route,
-  Link,
   useNavigate,
   useMatch
 } from 'react-router-dom'
@@ -11,7 +10,31 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import NavBar from './components/NavBar'
 import BlogForm from './components/BlogForm'
+import styled from 'styled-components'
+
+const Button = styled.button`
+  background: Bisque;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid Chocolate;
+  border-radius: 10px;
+`
+
+const Input = styled.input`
+  background: Bisque;
+  margin: 0.25em;
+  padding: 5px;
+  border-radius: 5px;
+`
+const LoginFormDiv = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+`
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -88,13 +111,15 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    <LoginFormDiv onSubmit={handleLogin}>
       <div>
         <label>
           username
-          <input
+          <Input
             type="text"
             value={username}
+            name="username"
+            id="username"
             onChange={({ target }) => setUsername(target.value)}
           />
         </label>
@@ -102,15 +127,17 @@ const App = () => {
       <div>
         <label>
           password
-          <input
+          <Input
             type="password"
             value={password}
+            name="password"
+            id="password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </label>
       </div>
-      <button type="submit">login</button>
-    </form>
+      <Button type="submit">login</Button>
+    </LoginFormDiv>
   )
   const match = useMatch('/blogs/:id')
   const blog = match
@@ -118,22 +145,10 @@ const App = () => {
     : null
   return (
     <div>
-      <div>
-        <Link to="/">blogs</Link>
-        {user === null
-          ? <Link to="/login" style={{ marginLeft: 10 }}>login</Link>
-          : <span style={{ marginLeft: 10 }}>
-              <Link to="/create">create new</Link>
-              {' '}
-              {user.name} logged in
-              <button onClick={handleLogout} style={{ marginLeft: 10 }}>logout</button>
-            </span>
-        }
-      </div>
-      <h2>blogs</h2>
+      <NavBar user={user} handleLogout={handleLogout} />
 
-      <Notification message={errorMessage} />
-      <Notification message={successMessage} />
+      <Notification message={errorMessage} variant="error" />
+      <Notification message={successMessage} variant="success" />
 
       <Routes>
         <Route path="/login" element={

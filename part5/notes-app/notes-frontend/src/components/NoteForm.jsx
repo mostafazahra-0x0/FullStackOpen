@@ -17,15 +17,6 @@ const Input = styled.input`
   border-radius: 10px;
   padding: 5px;
 `
-const Page = styled.div`
-  padding: 1em;
-  background: papayawhip;
-`
-
-const Navigation = styled.div`
-  background: BurlyWood;
-  padding: 1em;
-`
 
 const NoteForm = ({ createNote }) => {
   const [newNote, setNewNote] = useState('')
