@@ -142,8 +142,9 @@ describe('when there is initially one user in db', () => {
     assert(result.body.error.includes('expected `username` to be unique'))
 
     assert.s
-})
+  })
 
-after(async () => {
-  await mongoose.connection.close()
+  after(async () => {
+    await mongoose.connection.close()
+  })
 })
