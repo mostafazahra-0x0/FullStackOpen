@@ -4,7 +4,6 @@ import Note from './Note'
 
 const NoteList = () => {
   const notes = useNotes()
-
   return (
     <ul>
       {notes.map(note => (
