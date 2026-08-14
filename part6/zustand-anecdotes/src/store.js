@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import anecdoteService from './services/anecdotes'
+import useNotificationStore from './notificationStore'
 
 const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
@@ -13,12 +14,18 @@ const useAnecdoteStore = create((set, get) => ({
       set((state) => ({
         anecdotes: state.anecdotes.map(a => a.id === id ? updated : a)
       }))
+      useNotificationStore.getState().actions.showNotification(
+        `you voted '${updated.content}'`
+      )
     },
     add: async (content) => {
       const newAnecdote = await anecdoteService.createNew(content)
       set((state) => ({
         anecdotes: [...state.anecdotes, newAnecdote],
       }))
+      useNotificationStore.getState().actions.showNotification(
+        `you created '${newAnecdote.content}'`
+      )
     },
     setFilter: (value) => set(() => ({ filter: value })),
     initialize: async () => {
