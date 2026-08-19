@@ -75,7 +75,29 @@ describe('useAnecdoteStore', () => {
     expect(queryByText('React is great')).toBeNull()
     expect(queryByText('JavaScript is soo hard')).toBeNull()
   })
-  
+  it('voting increases the number of votes for an anecdote', async () => {
+    const anecdote = {
+      content: 'JavaScript is soo hard',
+      id: 1,
+      votes: 2
+    }
+    anecdoteService.update.mockResolvedValue({
+      ...anecdote,
+      votes: 3
+    })
+    useAnecdoteStore.setState({
+      anecdotes: [anecdote],
+      filter: ''
+    })
+    const { getByText } = render(<AnecdoteList />)
+    const button = getByText('vote')
+    await act(async () => {
+      button.click()
+    })
+    expect(
+      useAnecdoteStore.getState().anecdotes[0].votes
+    ).toBe(3)
+  })
 })
 afterEach(() => {
   cleanup()
