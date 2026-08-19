@@ -8,6 +8,7 @@
     "build": "vite build",
     "server": "json-server -p 3001 db.json",
     "lint": "eslint .",
+    "test": "vitest",
     "preview": "vite preview"
   },
   "dependencies": {
