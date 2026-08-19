@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import anecdoteService from './services/anecdotes'
 import useNotificationStore from './notificationStore'
 
-const useAnecdoteStore = create((set, get) => ({
+export const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
   filter: '',
   actions: {
