@@ -7,12 +7,6 @@ const AnecdoteForm = () => {
     event.preventDefault()
 
     const content = event.target.anecdote.value
-
-    if (content.length < 5) {
-      alert('anecdote must be at least 5 characters long')
-      return
-    }
-
     addAnecdote(content)
 
     event.target.reset()
