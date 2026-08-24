@@ -26,7 +26,10 @@ export const useAnecdotes = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
       notify('Anecdote created')
-    }
+    },
+    onError: () => {
+      notify('Failed to create anecdote')
+    },
   })
 
   const voteMutation = useMutation({
@@ -34,7 +37,10 @@ export const useAnecdotes = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
       notify('Anecdote updated')
-    }
+    },
+    onError: () => {
+      notify('Failed to update anecdote')
+    },
   })
 
   const addAnecdote = (content) => {
