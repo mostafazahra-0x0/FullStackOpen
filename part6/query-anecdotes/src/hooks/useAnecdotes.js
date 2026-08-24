@@ -9,10 +9,13 @@ import {
   createAnecdote,
   updateAnecdote
 } from '../requests'
+import { useContext } from 'react'
+import { NotificationContext } from '../components/NotificationContextProvider'
 
 export const useAnecdotes = () => {
   const queryClient = useQueryClient()
-
+  const { notify } = useContext(NotificationContext)
+  
   const result = useQuery({
     queryKey: ['anecdotes'],
     queryFn: getAnecdotes
@@ -22,6 +25,7 @@ export const useAnecdotes = () => {
     mutationFn: createAnecdote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
+      notify('Anecdote created')
     }
   })
 
@@ -29,6 +33,7 @@ export const useAnecdotes = () => {
     mutationFn: updateAnecdote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
+      notify('Anecdote updated')
     }
   })
 
